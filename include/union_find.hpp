@@ -33,9 +33,10 @@ class union_find
                 return false;
 
             if (mSize[r1] < mSize[r2])
-                mergeIntoLeft(r2, r1);
-            else
-                mergeIntoLeft(r1, r2);
+                std::swap(r1, r2);
+
+            merge_into_left(r1, r2);
+            compress_path(v2, r1);
 
             return true;
         }
@@ -53,10 +54,22 @@ class union_find
 
     protected:
 
-        void mergeIntoLeft(value_type r1, value_type r2)
+        void merge_into_left(value_type r1, value_type r2)
         {
             mSets[r2] = r1;
             mSize[r1] += mSize[r2];
+        }
+
+        void compress_path(value_type val, value_type root)
+        {
+            while (val != root)
+            {
+                value_type parent = mSets[val];
+                mSets[val] = root;
+                mSize[parent] -= mSize[val];
+                mSize[root] += mSize[val];
+                val = parent;
+            }
         }
 
         std::vector<value_type> mSets;
