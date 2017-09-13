@@ -1,3 +1,5 @@
 *.o
 test/test_indexed_heap
 test/test_union_find
+test/bm_indexed_heap
+test/bm_union_find
