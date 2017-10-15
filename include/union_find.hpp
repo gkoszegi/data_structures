@@ -36,20 +36,21 @@ class union_find
                 std::swap(r1, r2);
 
             merge_into_left(r1, r2);
-            compress_path(v2, r1);
 
             return true;
         }
 
-        value_type find(value_type v) const
+        value_type find(value_type value) const
         {
-            if (static_cast<size_t>(v) >= mSets.size())
+            if (static_cast<size_t>(value) >= mSets.size())
                 throw std::out_of_range("union_find::find(): value out of range");
 
-            while (v != mSets[v])
-                v = mSets[v];
+            value_type root = value;
+            while (root != mSets[root])
+                root = mSets[root];
 
-            return v;
+            compress_path(value, root);
+            return root;
         }
 
     protected:
@@ -60,7 +61,7 @@ class union_find
             mSize[r1] += mSize[r2];
         }
 
-        void compress_path(value_type val, value_type root)
+        void compress_path(value_type val, value_type root) const
         {
             while (val != root)
             {
@@ -72,6 +73,6 @@ class union_find
             }
         }
 
-        std::vector<value_type> mSets;
-        std::vector<size_type> mSize;
+        mutable std::vector<value_type> mSets;
+        mutable std::vector<size_type> mSize;
 };
