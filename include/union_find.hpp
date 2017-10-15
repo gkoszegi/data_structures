@@ -24,6 +24,16 @@ class union_find
             std::fill(mSize.begin(), mSize.end(), 1);
         }
 
+        value_type max_value() const
+        {
+            return static_cast<value_type>(mSets.size() - 1);
+        }
+
+        size_type size() const
+        {
+            return mSets.size();
+        }
+
         bool join(value_type v1, value_type v2)
         {
             auto r1 = find(v1);
@@ -42,7 +52,7 @@ class union_find
 
         value_type find(value_type value) const
         {
-            if (static_cast<size_t>(value) >= mSets.size())
+            if (static_cast<size_type>(value) >= size())
                 throw std::out_of_range("union_find::find(): value out of range");
 
             value_type root = value;
@@ -51,6 +61,17 @@ class union_find
 
             compress_path(value, root);
             return root;
+        }
+
+        size_type count_disjoint() const
+        {
+            size_type roots = 0;
+            for (value_type value = 0; value <= max_value(); ++value)
+            {
+                if (mSets[value] == value)
+                    ++roots;
+            }
+            return roots;
         }
 
     protected:
