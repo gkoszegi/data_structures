@@ -34,6 +34,10 @@ test: test_indexed_heap test_union_find
 	./test_indexed_heap $(TESTFLAGS)
 	./test_union_find $(TESTFLAGS)
 
+memcheck: test_indexed_heap test_union_find
+	valgrind --leak-check=full ./test_indexed_heap $(TESTFLAGS)
+	valgrind --leak-check=full ./test_union_find $(TESTFLAGS)
+
 bm: bm_indexed_heap bm_union_find
 	./bm_indexed_heap
 	./bm_union_find
