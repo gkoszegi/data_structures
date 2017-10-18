@@ -31,15 +31,32 @@ BOOST_AUTO_TEST_CASE(size_two)
 {
     union_find<int> uf(2);
 
-    BOOST_CHECK_THROW(uf.find(-1), std::out_of_range);
-    BOOST_CHECK_EQUAL(uf.find(0), 0);
-    BOOST_CHECK_EQUAL(uf.find(1), 1);
-    BOOST_CHECK_THROW(uf.find(2), std::out_of_range);
+    BOOST_CHECK_THROW(uf.find_opt(-1), std::out_of_range);
+    BOOST_CHECK_EQUAL(uf.find_opt(0), 0);
+    BOOST_CHECK_EQUAL(uf.find_opt(1), 1);
+    BOOST_CHECK_THROW(uf.find_opt(2), std::out_of_range);
 
     BOOST_CHECK(!uf.join(0, 0));
     BOOST_CHECK(uf.join(0, 1));
 
-    BOOST_CHECK_EQUAL(uf.find(0), uf.find(1));
+    BOOST_CHECK_EQUAL(uf.find_opt(0), uf.find_opt(1));
+}
+
+// =================================================================================================
+BOOST_AUTO_TEST_CASE(size_two_const)
+{
+    union_find<int> uf(2);
+    const auto& cuf = uf;
+
+    BOOST_CHECK_THROW(cuf.find(-1), std::out_of_range);
+    BOOST_CHECK_EQUAL(cuf.find(0), 0);
+    BOOST_CHECK_EQUAL(cuf.find(1), 1);
+    BOOST_CHECK_THROW(cuf.find(2), std::out_of_range);
+
+    BOOST_CHECK(!uf.join(0, 0));
+    BOOST_CHECK(uf.join(0, 1));
+
+    BOOST_CHECK_EQUAL(cuf.find(0), cuf.find(1));
 }
 
 // =================================================================================================

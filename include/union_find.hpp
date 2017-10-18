@@ -59,8 +59,19 @@ class union_find
             while (root != mSets[root])
                 root = mSets[root];
 
+            return root;
+        }
+
+        value_type find_opt(value_type value)
+        {
+            auto root = static_cast<const union_find&>(*this).find(value);
             compress_path(value, root);
             return root;
+        }
+
+        value_type find(value_type value)
+        {
+            return find_opt(value);
         }
 
         size_type count_disjoint() const
@@ -82,7 +93,7 @@ class union_find
             mSize[r1] += mSize[r2];
         }
 
-        void compress_path(value_type val, value_type root) const
+        void compress_path(value_type val, value_type root)
         {
             while (val != root)
             {
@@ -94,6 +105,6 @@ class union_find
             }
         }
 
-        mutable std::vector<value_type> mSets;
-        mutable std::vector<size_type> mSize;
+        std::vector<value_type> mSets;
+        std::vector<size_type> mSize;
 };
