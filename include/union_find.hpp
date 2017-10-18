@@ -56,7 +56,7 @@ class union_find
                 throw std::out_of_range("union_find::find(): value out of range");
 
             value_type root = value;
-            while (root != mSets[root])
+            while (!is_root(root))
                 root = mSets[root];
 
             return root;
@@ -79,10 +79,21 @@ class union_find
             size_type roots = 0;
             for (value_type value = 0; value <= max_value(); ++value)
             {
-                if (mSets[value] == value)
+                if (is_root(value))
                     ++roots;
             }
             return roots;
+        }
+
+        size_type count_singleton() const
+        {
+            size_type singletons = 0;
+            for (value_type value = 0; value <= max_value(); ++value)
+            {
+                if (is_singleton(value))
+                    ++singletons;
+            }
+            return singletons;
         }
 
     protected:
@@ -104,6 +115,18 @@ class union_find
                 val = parent;
             }
         }
+
+        bool is_root(value_type value) const
+        {
+            return mSets[value] == value;
+        }
+
+        bool is_singleton(value_type value) const
+        {
+            return is_root(value) && mSize[value] == 1;
+        }
+
+    private:
 
         std::vector<value_type> mSets;
         std::vector<size_type> mSize;

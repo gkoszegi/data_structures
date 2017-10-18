@@ -64,6 +64,8 @@ BOOST_AUTO_TEST_CASE(count_disjoint)
 {
     union_find<int> uf(128);
 
+    BOOST_CHECK_EQUAL(uf.count_disjoint(), uf.size());
+
     for (int i = 0; i < 120; ++i)
     {
         BOOST_CHECK_EQUAL(uf.count_disjoint(), uf.size() - i);
@@ -71,4 +73,20 @@ BOOST_AUTO_TEST_CASE(count_disjoint)
     }
 
     BOOST_CHECK_EQUAL(uf.count_disjoint(), 8);
+}
+
+// =================================================================================================
+BOOST_AUTO_TEST_CASE(count_singleton)
+{
+    union_find<int> uf(128);
+
+    BOOST_CHECK_EQUAL(uf.count_singleton(), uf.size());
+
+    for (int i = 0; i < 120; ++i)
+    {
+        BOOST_CHECK_EQUAL(uf.count_singleton(), uf.size() - i - (i <= 8 ? i : 8));
+        BOOST_CHECK(uf.join(i, i + 8));
+    }
+
+    BOOST_CHECK_EQUAL(uf.count_singleton(), 0);
 }
