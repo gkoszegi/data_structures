@@ -5,7 +5,7 @@ GOOGLE_BENCHMARK_DIR = $(HOME)/benchmark
 INCLUDES = -I../include $(BOOST_INC)
 CXXFLAGS = -std=c++14 -g -O2 -Wall -Wextra -Wpedantic -Werror $(INCLUDES)
 LDFLAGS = $(BOOST_LIB) -lboost_unit_test_framework
-TESTFLAGS = --report_level=short
+TESTFLAGS = --catch_system_error=yes --report_level=short
 
 all: test_indexed_heap test_union_find bm_indexed_heap bm_union_find
 
