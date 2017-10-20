@@ -165,4 +165,30 @@ BOOST_AUTO_TEST_CASE(join_sets)
 }
 
 // =================================================================================================
+BOOST_AUTO_TEST_CASE(path_compression)
+{
+    union_find_internals uf(5);
+
+    BOOST_CHECK(uf.join(0, 1));
+    BOOST_CHECK(uf.join(2, 3));
+
+    int root1 = uf.find(0);
+    int child1 = root1 == 0 ? 1 : 0;
+    int root2 = uf.find(2);
+    int child2 = root2 == 2 ? 3 : 2;
+
+    BOOST_CHECK(uf.join(child1, child2));
+
+    int newRoot = uf.find(root1);
+    int oldRoot = root1 == newRoot ? root2 : root1;
+
+    BOOST_CHECK_EQUAL(uf.find_opt(child1), uf.find_opt(child2));
+
+    BOOST_CHECK_EQUAL(uf.num_inferiors(newRoot), 4);
+    BOOST_CHECK_EQUAL(uf.num_inferiors(oldRoot), 1);
+    BOOST_CHECK_EQUAL(uf.num_inferiors(child1), 1);
+    BOOST_CHECK_EQUAL(uf.num_inferiors(child2), 1);
+}
+
+// =================================================================================================
 BOOST_AUTO_TEST_SUITE_END()
