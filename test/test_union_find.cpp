@@ -101,7 +101,7 @@ BOOST_AUTO_TEST_SUITE_END()
 namespace
 {
     class union_find_internals
-        : public union_find<int>
+        : public union_find<unsigned char>
     {
         public:
             using union_find::union_find;
@@ -188,6 +188,32 @@ BOOST_AUTO_TEST_CASE(path_compression)
     BOOST_CHECK_EQUAL(uf.num_inferiors(oldRoot), 1);
     BOOST_CHECK_EQUAL(uf.num_inferiors(child1), 1);
     BOOST_CHECK_EQUAL(uf.num_inferiors(child2), 1);
+}
+
+// =================================================================================================
+BOOST_AUTO_TEST_CASE(max_size)
+{
+    union_find_internals uf(255);
+
+    BOOST_CHECK_EQUAL(uf.size(), 255);
+    BOOST_CHECK_EQUAL(uf.max_value(), 254);
+    BOOST_CHECK_EQUAL(uf.count_disjoint(), 255);
+    BOOST_CHECK_EQUAL(uf.count_singleton(), 255);
+
+    BOOST_CHECK(uf.join(0, 1));
+    auto root = uf.find(0);
+
+    for (unsigned char i = 2; i < 255; ++i)
+    {
+        BOOST_CHECK_EQUAL(uf.count_singleton(), 255 - i);
+        BOOST_CHECK(uf.join(0, i));
+    }
+
+    BOOST_CHECK_EQUAL(uf.num_inferiors(0), 255);
+    BOOST_CHECK_EQUAL(uf.num_inferiors(254), 1);
+    BOOST_CHECK_EQUAL(uf.find(254), root);
+    BOOST_CHECK_EQUAL(uf.count_disjoint(), 1);
+    BOOST_CHECK_EQUAL(uf.count_singleton(), 0);
 }
 
 // =================================================================================================
