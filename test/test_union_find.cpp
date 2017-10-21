@@ -107,7 +107,7 @@ namespace
             using union_find::union_find;
             using union_find::is_root;
             using union_find::is_singleton;
-            using union_find::num_inferiors;
+            using union_find::subtree_size;
     };
 }
 
@@ -121,14 +121,14 @@ BOOST_AUTO_TEST_CASE(join_singletons)
 
     BOOST_CHECK_EQUAL(uf.count_singleton(), 5);
     BOOST_CHECK_NE(uf.find(0), uf.find(4));
-    BOOST_CHECK_EQUAL(uf.num_inferiors(0), 1);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(4), 1);
+    BOOST_CHECK_EQUAL(uf.subtree_size(0), 1);
+    BOOST_CHECK_EQUAL(uf.subtree_size(4), 1);
 
     BOOST_CHECK(uf.join(0, 4));
-    BOOST_CHECK_EQUAL(uf.num_inferiors(0) + uf.num_inferiors(4), 1 + 2);
+    BOOST_CHECK_EQUAL(uf.subtree_size(0) + uf.subtree_size(4), 1 + 2);
 
     BOOST_CHECK_EQUAL(uf.find_opt(0), uf.find_opt(4));
-    BOOST_CHECK_EQUAL(uf.num_inferiors(0) + uf.num_inferiors(4), 1 + 2);
+    BOOST_CHECK_EQUAL(uf.subtree_size(0) + uf.subtree_size(4), 1 + 2);
     BOOST_CHECK_EQUAL(uf.count_singleton(), 3);
 
 }
@@ -177,18 +177,18 @@ BOOST_AUTO_TEST_CASE(path_compression_3_to_2)
     int oldRoot = root1 == newRoot ? root2 : root1;
 
     // longest path: newRoot <- oldRoot <- child (3 nodes)
-    BOOST_CHECK_EQUAL(uf.num_inferiors(newRoot), 4);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(oldRoot), 2);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(child1), 1);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(child2), 1);
+    BOOST_CHECK_EQUAL(uf.subtree_size(newRoot), 4);
+    BOOST_CHECK_EQUAL(uf.subtree_size(oldRoot), 2);
+    BOOST_CHECK_EQUAL(uf.subtree_size(child1), 1);
+    BOOST_CHECK_EQUAL(uf.subtree_size(child2), 1);
 
     BOOST_CHECK_EQUAL(uf.find_opt(child1), uf.find_opt(child2));
 
     // longest path: newRoot <- all the others (2 nodes)
-    BOOST_CHECK_EQUAL(uf.num_inferiors(newRoot), 4);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(oldRoot), 1);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(child1), 1);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(child2), 1);
+    BOOST_CHECK_EQUAL(uf.subtree_size(newRoot), 4);
+    BOOST_CHECK_EQUAL(uf.subtree_size(oldRoot), 1);
+    BOOST_CHECK_EQUAL(uf.subtree_size(child1), 1);
+    BOOST_CHECK_EQUAL(uf.subtree_size(child2), 1);
 }
 
 // =================================================================================================
@@ -210,12 +210,12 @@ BOOST_AUTO_TEST_CASE(path_compression_4_to_2)
     int child12 = root12 == root1 ? root2 : root1;
 
     // longest path: root12 <- child12 <- childX (3 nodes)
-    BOOST_CHECK_EQUAL(uf.num_inferiors(root12), 4);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(child12), 2);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(root1), 4);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(child1), 1);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(root2), 2);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(child2), 1);
+    BOOST_CHECK_EQUAL(uf.subtree_size(root12), 4);
+    BOOST_CHECK_EQUAL(uf.subtree_size(child12), 2);
+    BOOST_CHECK_EQUAL(uf.subtree_size(root1), 4);
+    BOOST_CHECK_EQUAL(uf.subtree_size(child1), 1);
+    BOOST_CHECK_EQUAL(uf.subtree_size(root2), 2);
+    BOOST_CHECK_EQUAL(uf.subtree_size(child2), 1);
 
     BOOST_CHECK(uf.join(4, 5));
     BOOST_CHECK(uf.join(6, 7));
@@ -231,12 +231,12 @@ BOOST_AUTO_TEST_CASE(path_compression_4_to_2)
     int child34 = root34 == root3 ? root4 : root3;
 
     // longest path: root34 <- child34 <- childX (3 nodes)
-    BOOST_CHECK_EQUAL(uf.num_inferiors(root34), 4);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(child34), 2);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(root3), 4);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(child3), 1);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(root4), 2);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(child4), 1);
+    BOOST_CHECK_EQUAL(uf.subtree_size(root34), 4);
+    BOOST_CHECK_EQUAL(uf.subtree_size(child34), 2);
+    BOOST_CHECK_EQUAL(uf.subtree_size(root3), 4);
+    BOOST_CHECK_EQUAL(uf.subtree_size(child3), 1);
+    BOOST_CHECK_EQUAL(uf.subtree_size(root4), 2);
+    BOOST_CHECK_EQUAL(uf.subtree_size(child4), 1);
 
     BOOST_CHECK(uf.join(root12, root34));
 
@@ -254,20 +254,20 @@ BOOST_AUTO_TEST_CASE(path_compression_4_to_2)
     1 3 5 7   - child1 | child2 | child3 | child4
 
      */
-    BOOST_CHECK_EQUAL(uf.num_inferiors(root1234), 8);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(child1234), 4);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(root12), 8);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(root34), 4);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(child12), 2);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(child34), 2);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(root1), 8);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(root2), 2);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(root3), 4);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(root4), 2);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(child1), 1);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(child2), 1);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(child3), 1);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(child4), 1);
+    BOOST_CHECK_EQUAL(uf.subtree_size(root1234), 8);
+    BOOST_CHECK_EQUAL(uf.subtree_size(child1234), 4);
+    BOOST_CHECK_EQUAL(uf.subtree_size(root12), 8);
+    BOOST_CHECK_EQUAL(uf.subtree_size(root34), 4);
+    BOOST_CHECK_EQUAL(uf.subtree_size(child12), 2);
+    BOOST_CHECK_EQUAL(uf.subtree_size(child34), 2);
+    BOOST_CHECK_EQUAL(uf.subtree_size(root1), 8);
+    BOOST_CHECK_EQUAL(uf.subtree_size(root2), 2);
+    BOOST_CHECK_EQUAL(uf.subtree_size(root3), 4);
+    BOOST_CHECK_EQUAL(uf.subtree_size(root4), 2);
+    BOOST_CHECK_EQUAL(uf.subtree_size(child1), 1);
+    BOOST_CHECK_EQUAL(uf.subtree_size(child2), 1);
+    BOOST_CHECK_EQUAL(uf.subtree_size(child3), 1);
+    BOOST_CHECK_EQUAL(uf.subtree_size(child4), 1);
 
     BOOST_CHECK_EQUAL(uf.find_opt(child4), root1234);
     // child4 left root4/child34, both left child1234 and directly join root1234
@@ -281,20 +281,20 @@ BOOST_AUTO_TEST_CASE(path_compression_4_to_2)
     1 3 5  7   - child1 | child2 | child3 | child4
 
     */
-    BOOST_CHECK_EQUAL(uf.num_inferiors(root1234), 8);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(child1234), 2);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(root12), 8);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(root34), 2);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(child12), 2);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(child34), 1);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(root1), 8);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(root2), 2);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(root3), 2);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(root4), 1);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(child1), 1);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(child2), 1);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(child3), 1);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(child4), 1);
+    BOOST_CHECK_EQUAL(uf.subtree_size(root1234), 8);
+    BOOST_CHECK_EQUAL(uf.subtree_size(child1234), 2);
+    BOOST_CHECK_EQUAL(uf.subtree_size(root12), 8);
+    BOOST_CHECK_EQUAL(uf.subtree_size(root34), 2);
+    BOOST_CHECK_EQUAL(uf.subtree_size(child12), 2);
+    BOOST_CHECK_EQUAL(uf.subtree_size(child34), 1);
+    BOOST_CHECK_EQUAL(uf.subtree_size(root1), 8);
+    BOOST_CHECK_EQUAL(uf.subtree_size(root2), 2);
+    BOOST_CHECK_EQUAL(uf.subtree_size(root3), 2);
+    BOOST_CHECK_EQUAL(uf.subtree_size(root4), 1);
+    BOOST_CHECK_EQUAL(uf.subtree_size(child1), 1);
+    BOOST_CHECK_EQUAL(uf.subtree_size(child2), 1);
+    BOOST_CHECK_EQUAL(uf.subtree_size(child3), 1);
+    BOOST_CHECK_EQUAL(uf.subtree_size(child4), 1);
 
     BOOST_CHECK_EQUAL(uf.find_opt(child2), root1234);
     // child2 left root2/chilid12 and directly joins root1234
@@ -308,20 +308,20 @@ BOOST_AUTO_TEST_CASE(path_compression_4_to_2)
     1 3 5  7   - child1 | child2 | child3 | child4
 
     */
-    BOOST_CHECK_EQUAL(uf.num_inferiors(root1234), 8);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(child1234), 2);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(root12), 8);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(root34), 2);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(child12), 1);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(child34), 1);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(root1), 8);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(root2), 1);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(root3), 2);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(root4), 1);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(child1), 1);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(child2), 1);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(child3), 1);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(child4), 1);
+    BOOST_CHECK_EQUAL(uf.subtree_size(root1234), 8);
+    BOOST_CHECK_EQUAL(uf.subtree_size(child1234), 2);
+    BOOST_CHECK_EQUAL(uf.subtree_size(root12), 8);
+    BOOST_CHECK_EQUAL(uf.subtree_size(root34), 2);
+    BOOST_CHECK_EQUAL(uf.subtree_size(child12), 1);
+    BOOST_CHECK_EQUAL(uf.subtree_size(child34), 1);
+    BOOST_CHECK_EQUAL(uf.subtree_size(root1), 8);
+    BOOST_CHECK_EQUAL(uf.subtree_size(root2), 1);
+    BOOST_CHECK_EQUAL(uf.subtree_size(root3), 2);
+    BOOST_CHECK_EQUAL(uf.subtree_size(root4), 1);
+    BOOST_CHECK_EQUAL(uf.subtree_size(child1), 1);
+    BOOST_CHECK_EQUAL(uf.subtree_size(child2), 1);
+    BOOST_CHECK_EQUAL(uf.subtree_size(child3), 1);
+    BOOST_CHECK_EQUAL(uf.subtree_size(child4), 1);
 
     BOOST_CHECK_EQUAL(uf.find_opt(child3), root1234);
     // child3 left child1234 and directly joins root1234
@@ -335,20 +335,20 @@ BOOST_AUTO_TEST_CASE(path_compression_4_to_2)
     1 3 5  7   - child1 | child2 | child3 | child4
 
     */
-    BOOST_CHECK_EQUAL(uf.num_inferiors(root1234), 8);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(child1234), 1);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(root12), 8);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(root34), 1);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(child12), 1);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(child34), 1);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(root1), 8);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(root2), 1);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(root3), 1);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(root4), 1);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(child1), 1);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(child2), 1);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(child3), 1);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(child4), 1);
+    BOOST_CHECK_EQUAL(uf.subtree_size(root1234), 8);
+    BOOST_CHECK_EQUAL(uf.subtree_size(child1234), 1);
+    BOOST_CHECK_EQUAL(uf.subtree_size(root12), 8);
+    BOOST_CHECK_EQUAL(uf.subtree_size(root34), 1);
+    BOOST_CHECK_EQUAL(uf.subtree_size(child12), 1);
+    BOOST_CHECK_EQUAL(uf.subtree_size(child34), 1);
+    BOOST_CHECK_EQUAL(uf.subtree_size(root1), 8);
+    BOOST_CHECK_EQUAL(uf.subtree_size(root2), 1);
+    BOOST_CHECK_EQUAL(uf.subtree_size(root3), 1);
+    BOOST_CHECK_EQUAL(uf.subtree_size(root4), 1);
+    BOOST_CHECK_EQUAL(uf.subtree_size(child1), 1);
+    BOOST_CHECK_EQUAL(uf.subtree_size(child2), 1);
+    BOOST_CHECK_EQUAL(uf.subtree_size(child3), 1);
+    BOOST_CHECK_EQUAL(uf.subtree_size(child4), 1);
 }
 
 // =================================================================================================
@@ -377,8 +377,8 @@ BOOST_AUTO_TEST_CASE(max_size)
     BOOST_CHECK_EQUAL(uf.count_singleton(), 1);
 
     BOOST_CHECK(uf.join(0, 254));
-    BOOST_CHECK_EQUAL(uf.num_inferiors(0), 255);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(254), 1);
+    BOOST_CHECK_EQUAL(uf.subtree_size(0), 255);
+    BOOST_CHECK_EQUAL(uf.subtree_size(254), 1);
     BOOST_CHECK_EQUAL(uf.find(254), root);
     BOOST_CHECK_EQUAL(uf.count_disjoint(), 1);
     BOOST_CHECK_EQUAL(uf.count_singleton(), 0);

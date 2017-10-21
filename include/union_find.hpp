@@ -124,14 +124,14 @@ class union_find
             return mSets[value] == value;
         }
 
-        size_type num_inferiors(value_type value) const
+        size_type subtree_size(value_type value) const
         {
             return mSize[value];
         }
 
         bool is_singleton(value_type value) const
         {
-            return is_root(value) && num_inferiors(value) == 1;
+            return is_root(value) && subtree_size(value) == 1;
         }
 
     private:
