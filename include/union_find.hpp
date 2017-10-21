@@ -121,15 +121,15 @@ class union_find
         void compress_path(value_type val, value_type root)
         {
             value_type parent = mSets[val];
-            size_type relinked = mSize[val];
+            size_type relinked = 0;
 
             while (parent != root)
             {
                 mSets[val] = root;
+                relinked += mSize[val];
                 mSize[parent] -= relinked;
                 val = parent;
                 parent = mSets[val];
-                relinked += mSize[val];
             }
         }
 
