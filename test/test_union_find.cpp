@@ -65,11 +65,11 @@ BOOST_AUTO_TEST_CASE(size_two_const)
 // =================================================================================================
 BOOST_AUTO_TEST_CASE(count_disjoint)
 {
-    union_find<int> uf(128);
+    union_find<int> uf(32);
 
     BOOST_CHECK_EQUAL(uf.count_disjoint(), uf.size());
 
-    for (int i = 0; i < 120; ++i)
+    for (int i = 0; i < 32 - 8; ++i)
     {
         BOOST_CHECK_EQUAL(uf.count_disjoint(), uf.size() - i);
         BOOST_CHECK(uf.join(i, i + 8));
@@ -81,11 +81,11 @@ BOOST_AUTO_TEST_CASE(count_disjoint)
 // =================================================================================================
 BOOST_AUTO_TEST_CASE(count_singleton)
 {
-    union_find<int> uf(128);
+    union_find<int> uf(32);
 
     BOOST_CHECK_EQUAL(uf.count_singleton(), uf.size());
 
-    for (int i = 0; i < 120; ++i)
+    for (int i = 0; i < 32 - 8; ++i)
     {
         BOOST_CHECK_EQUAL(uf.count_singleton(), uf.size() - i - (i <= 8 ? i : 8));
         BOOST_CHECK(uf.join(i, i + 8));
@@ -143,25 +143,19 @@ BOOST_AUTO_TEST_CASE(join_sets)
     BOOST_CHECK(uf.join(0, 1));
     BOOST_CHECK(uf.join(2, 3));
 
+    BOOST_CHECK_EQUAL(uf.count_singleton(), 1);
+
     int root1 = uf.find(0);
     int child1 = root1 == 0 ? 1 : 0;
     int root2 = uf.find(2);
     int child2 = root2 == 2 ? 3 : 2;
 
-    BOOST_CHECK_EQUAL(uf.num_inferiors(root1), 2);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(root2), 2);
-
-    BOOST_CHECK_EQUAL(uf.count_singleton(), 1);
+    BOOST_CHECK_NE(uf.find(child1), uf.find(child2));
 
     BOOST_CHECK(uf.join(child1, child2));
 
-    int newRoot = uf.find(root1);
-    int oldRoot = root1 == newRoot ? root2 : root1;
-
-    BOOST_CHECK_EQUAL(uf.num_inferiors(newRoot), 4);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(oldRoot), 2);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(child1), 1);
-    BOOST_CHECK_EQUAL(uf.num_inferiors(child2), 1);
+    BOOST_CHECK_EQUAL(uf.find(child1), uf.find(root2));
+    BOOST_CHECK_EQUAL(uf.find(root1), uf.find(child2));
 }
 
 // =================================================================================================
@@ -182,6 +176,11 @@ BOOST_AUTO_TEST_CASE(path_compression)
     int newRoot = uf.find(root1);
     int oldRoot = root1 == newRoot ? root2 : root1;
 
+    BOOST_CHECK_EQUAL(uf.num_inferiors(newRoot), 4);
+    BOOST_CHECK_EQUAL(uf.num_inferiors(oldRoot), 2);
+    BOOST_CHECK_EQUAL(uf.num_inferiors(child1), 1);
+    BOOST_CHECK_EQUAL(uf.num_inferiors(child2), 1);
+
     BOOST_CHECK_EQUAL(uf.find_opt(child1), uf.find_opt(child2));
 
     BOOST_CHECK_EQUAL(uf.num_inferiors(newRoot), 4);
@@ -201,14 +200,21 @@ BOOST_AUTO_TEST_CASE(max_size)
     BOOST_CHECK_EQUAL(uf.count_singleton(), 255);
 
     BOOST_CHECK(uf.join(0, 1));
-    auto root = uf.find(0);
+    const auto root = uf.find(0);
+    BOOST_CHECK_EQUAL(uf.count_disjoint(), 254);
+    BOOST_CHECK_EQUAL(uf.count_singleton(), 253);
 
-    for (unsigned char i = 2; i < 255; ++i)
-    {
-        BOOST_CHECK_EQUAL(uf.count_singleton(), 255 - i);
-        BOOST_CHECK(uf.join(0, i));
-    }
+    BOOST_CHECK(uf.join(0, 2));
+    BOOST_CHECK_EQUAL(uf.count_disjoint(), 253);
+    BOOST_CHECK_EQUAL(uf.count_singleton(), 252);
 
+    for (unsigned char i = 3; i < 254; ++i)
+        uf.join(0, i);
+
+    BOOST_CHECK_EQUAL(uf.count_disjoint(), 2);
+    BOOST_CHECK_EQUAL(uf.count_singleton(), 1);
+
+    BOOST_CHECK(uf.join(0, 254));
     BOOST_CHECK_EQUAL(uf.num_inferiors(0), 255);
     BOOST_CHECK_EQUAL(uf.num_inferiors(254), 1);
     BOOST_CHECK_EQUAL(uf.find(254), root);
