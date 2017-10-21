@@ -41,6 +41,7 @@ BOOST_AUTO_TEST_CASE(size_two)
 
     BOOST_CHECK(!uf.join(0, 0));
     BOOST_CHECK(uf.join(0, 1));
+    BOOST_CHECK(!uf.join(0, 1));
 
     BOOST_CHECK_EQUAL(uf.find_opt(0), uf.find_opt(1));
 }
@@ -153,6 +154,7 @@ BOOST_AUTO_TEST_CASE(join_sets)
     BOOST_CHECK_NE(uf.find(child1), uf.find(child2));
 
     BOOST_CHECK(uf.join(child1, child2));
+    BOOST_CHECK(!uf.join(root1, root2));
 
     BOOST_CHECK_EQUAL(uf.find(child1), uf.find(root2));
     BOOST_CHECK_EQUAL(uf.find(root1), uf.find(child2));
