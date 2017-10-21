@@ -493,4 +493,51 @@ BOOST_AUTO_TEST_CASE(max_size)
 }
 
 // =================================================================================================
+BOOST_AUTO_TEST_CASE(resize_shrink)
+{
+    union_find_internals uf(8);
+    BOOST_CHECK(uf.join(0, 7));
+    BOOST_CHECK_EQUAL(uf.find(0), uf.find(7));
+    BOOST_CHECK_EQUAL(uf.count_singleton(), 6);
+    BOOST_CHECK_EQUAL(uf.count_disjoint(), 7);
+
+    BOOST_CHECK_THROW(uf.resize(7), std::out_of_range);
+    BOOST_CHECK_EQUAL(uf.size(), 8);
+    BOOST_CHECK_EQUAL(uf.find(0), uf.find(7));
+    BOOST_CHECK_EQUAL(uf.count_singleton(), 6);
+    BOOST_CHECK_EQUAL(uf.count_disjoint(), 7);
+}
+
+// =================================================================================================
+BOOST_AUTO_TEST_CASE(resize_nop)
+{
+    union_find_internals uf(8);
+    BOOST_CHECK(uf.join(0, 7));
+    BOOST_CHECK_EQUAL(uf.find(0), uf.find(7));
+    BOOST_CHECK_EQUAL(uf.count_singleton(), 6);
+    BOOST_CHECK_EQUAL(uf.count_disjoint(), 7);
+
+    BOOST_CHECK_NO_THROW(uf.resize(8));
+    BOOST_CHECK_EQUAL(uf.size(), 8);
+    BOOST_CHECK_EQUAL(uf.find(0), uf.find(7));
+    BOOST_CHECK_EQUAL(uf.count_singleton(), 6);
+    BOOST_CHECK_EQUAL(uf.count_disjoint(), 7);
+}
+
+// =================================================================================================
+BOOST_AUTO_TEST_CASE(resize_expand)
+{
+    union_find_internals uf(8);
+    BOOST_CHECK(uf.join(0, 7));
+    BOOST_CHECK_EQUAL(uf.find(0), uf.find(7));
+    BOOST_CHECK_EQUAL(uf.count_singleton(), 6);
+    BOOST_CHECK_EQUAL(uf.count_disjoint(), 7);
+
+    BOOST_CHECK_NO_THROW(uf.resize(11));
+    BOOST_CHECK_EQUAL(uf.size(), 11);
+    BOOST_CHECK_EQUAL(uf.count_singleton(), 9);
+    BOOST_CHECK_EQUAL(uf.count_disjoint(), 10);
+}
+
+// =================================================================================================
 BOOST_AUTO_TEST_SUITE_END()

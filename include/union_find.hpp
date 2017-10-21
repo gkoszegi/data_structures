@@ -34,6 +34,20 @@ class union_find
             return mSets.size();
         }
 
+        void resize(size_type n)
+        {
+            if (n < size())
+                throw std::out_of_range("union_find::resize() cannot shrink size");
+            if (n == size())
+                return;
+
+            const auto origSize = mSets.size();
+            mSets.resize(n);
+            mSize.resize(n);
+            std::iota(mSets.begin() + origSize, mSets.end(), origSize);
+            std::fill(mSize.begin() + origSize, mSize.end(), 1);
+        }
+
         bool join(value_type v1, value_type v2)
         {
             auto r1 = find(v1);
