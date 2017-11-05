@@ -50,7 +50,7 @@ BOOST_AUTO_TEST_CASE(zero_sized_heap)
     BOOST_CHECK_THROW(q.top_priority(), std::out_of_range);
     BOOST_CHECK_THROW(q.push(0, 0), std::out_of_range);
     BOOST_CHECK_THROW(q.get_priority(0), std::out_of_range);
-    BOOST_CHECK_THROW(q.set_priority(0, 0), std::out_of_range);
+    BOOST_CHECK_THROW(q.change_priority(0, 0), std::out_of_range);
     BOOST_CHECK(q.check_index());
     BOOST_CHECK(q.check_heap());
 }
@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE(size_one_heap)
     BOOST_CHECK(q.empty());
     BOOST_CHECK_EQUAL(q.size(), 0);
     BOOST_CHECK_NO_THROW(q.pop());
-    BOOST_CHECK(!q.set_priority(0, 6));
+    BOOST_CHECK(!q.change_priority(0, 6));
     BOOST_CHECK_THROW(q.top(), std::out_of_range);
     BOOST_CHECK_THROW(q.top_priority(), std::out_of_range);
     
@@ -87,7 +87,7 @@ BOOST_AUTO_TEST_CASE(size_one_heap)
     BOOST_CHECK_EQUAL(q.get_priority(0), 1);
 
     // reset the priority
-    BOOST_CHECK_NO_THROW(q.set_priority(0, 6));
+    BOOST_CHECK_NO_THROW(q.change_priority(0, 6));
     BOOST_CHECK(!q.empty());
     BOOST_CHECK_EQUAL(q.top(), 0);
     BOOST_CHECK_EQUAL(q.top_priority(), 6);
@@ -145,7 +145,7 @@ BOOST_AUTO_TEST_CASE(heap_property_repriorize)
 
     for (unsigned elem: {0,3,2,4,1})
     {
-        BOOST_CHECK(q.set_priority(elem, 10 - elem));
+        BOOST_CHECK(q.change_priority(elem, 10 - elem));
         BOOST_CHECK(q.check_heap());
         BOOST_CHECK(q.check_index());
     }

@@ -83,7 +83,7 @@ class indexed_heap
             return mHeap.at(mIndex.at(elem)).prio;
         }
 
-        bool set_priority(const elem_type elem, const prio_type priority)
+        bool change_priority(const elem_type elem, const prio_type priority)
         {
             const auto idx = mIndex.at(elem);
             if (idx == invalidIndex)
@@ -99,6 +99,12 @@ class indexed_heap
 
             (this->*restoreHeap)(elem, idx);
             return true;
+        }
+
+        void set_priority(const elem_type elem, const prio_type priority)
+        {
+            if (!change_priority(elem, priority))
+                push(elem, priority);
         }
 
     protected:
